@@ -11,23 +11,41 @@ import { VillageManager } from "./VillageManager";
 import { FarmingConfig } from "./FarmingConfig";
 import { BotStatus } from "./BotStatus";
 import { ActivityLog } from "./ActivityLog";
+import { useBotAPI } from "@/hooks/useBotAPI";
+import { Toaster } from "@/components/ui/toaster";
 
 const TravianBotDashboard = () => {
   const [botStatus, setBotStatus] = useState<'stopped' | 'running' | 'paused'>('stopped');
   const [isConnected, setIsConnected] = useState(false);
+  const { controlBot } = useBotAPI();
   
-  const handleStartBot = () => {
-    setBotStatus('running');
-    setIsConnected(true);
+  const handleStartBot = async () => {
+    try {
+      await controlBot('start');
+      setBotStatus('running');
+      setIsConnected(true);
+    } catch (error) {
+      console.error('Failed to start bot:', error);
+    }
   };
 
-  const handlePauseBot = () => {
-    setBotStatus(botStatus === 'paused' ? 'running' : 'paused');
+  const handlePauseBot = async () => {
+    try {
+      await controlBot('pause');
+      setBotStatus(botStatus === 'paused' ? 'running' : 'paused');
+    } catch (error) {
+      console.error('Failed to pause bot:', error);
+    }
   };
 
-  const handleStopBot = () => {
-    setBotStatus('stopped');
-    setIsConnected(false);
+  const handleStopBot = async () => {
+    try {
+      await controlBot('stop');
+      setBotStatus('stopped');
+      setIsConnected(false);
+    } catch (error) {
+      console.error('Failed to stop bot:', error);
+    }
   };
 
   const getStatusColor = () => {
@@ -153,6 +171,7 @@ const TravianBotDashboard = () => {
           </TabsContent>
         </Tabs>
       </div>
+      <Toaster />
     </div>
   );
 };

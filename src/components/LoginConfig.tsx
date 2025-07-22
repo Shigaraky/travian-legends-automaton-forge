@@ -5,8 +5,9 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { AlertCircle, Globe, User, Lock, Server } from "lucide-react";
+import { AlertCircle, Globe, User, Lock, Server, Loader2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useBotAPI } from "@/hooks/useBotAPI";
 
 export const LoginConfig = () => {
   const [credentials, setCredentials] = useState({
@@ -15,15 +16,40 @@ export const LoginConfig = () => {
     serverUrl: "https://ts30.x3.europe.travian.com/dorf1.php",
     autoLogin: true
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
+  const [playerData, setPlayerData] = useState<any>(null);
+  const { loginToTravian } = useBotAPI();
 
-  const handleSave = () => {
-    console.log("Saving login configuration:", credentials);
-    // TODO: Save to backend/config
+  const handleSave = async () => {
+    if (!credentials.email || !credentials.password || !credentials.serverUrl) {
+      return;
+    }
+    
+    setIsLoading(true);
+    try {
+      const data = await loginToTravian(credentials);
+      setIsConnected(true);
+      setPlayerData(data);
+    } catch (error) {
+      setIsConnected(false);
+      setPlayerData(null);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const testConnection = () => {
-    console.log("Testing connection to:", credentials.serverUrl);
-    // TODO: Test connection to server
+  const testConnection = async () => {
+    if (!credentials.serverUrl) return;
+    
+    setIsLoading(true);
+    try {
+      await loginToTravian({ ...credentials, email: "test", password: "test" });
+    } catch (error) {
+      // Expected to fail for test credentials
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -89,12 +115,21 @@ export const LoginConfig = () => {
           </Alert>
 
           <div className="flex gap-2">
-            <Button onClick={handleSave} className="flex items-center gap-2">
-              <Lock className="w-4 h-4" />
-              Save Configuration
+            <Button 
+              onClick={handleSave} 
+              className="flex items-center gap-2"
+              disabled={isLoading || !credentials.email || !credentials.password || !credentials.serverUrl}
+            >
+              {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Lock className="w-4 h-4" />}
+              {isConnected ? "Connected" : "Save & Connect"}
             </Button>
-            <Button onClick={testConnection} variant="outline" className="flex items-center gap-2">
-              <Server className="w-4 h-4" />
+            <Button 
+              onClick={testConnection} 
+              variant="outline" 
+              className="flex items-center gap-2"
+              disabled={isLoading || !credentials.serverUrl}
+            >
+              {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Server className="w-4 h-4" />}
               Test Connection
             </Button>
           </div>
@@ -109,20 +144,24 @@ export const LoginConfig = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-3 gap-4 text-sm">
-            <div>
-              <Label className="text-muted-foreground">Server Speed</Label>
-              <p className="font-semibold">3x Speed</p>
+          {isConnected && playerData ? (
+            <div className="grid grid-cols-3 gap-4 text-sm">
+              <div>
+                <Label className="text-muted-foreground">Server Speed</Label>
+                <p className="font-semibold">3x Speed</p>
+              </div>
+              <div>
+                <Label className="text-muted-foreground">Player Race</Label>
+                <p className="font-semibold">{playerData.race}</p>
+              </div>
+              <div>
+                <Label className="text-muted-foreground">Villages</Label>
+                <p className="font-semibold">{playerData.villages?.length || 0}</p>
+              </div>
             </div>
-            <div>
-              <Label className="text-muted-foreground">Player Race</Label>
-              <p className="font-semibold">Romans</p>
-            </div>
-            <div>
-              <Label className="text-muted-foreground">Population</Label>
-              <p className="font-semibold">127</p>
-            </div>
-          </div>
+          ) : (
+            <p className="text-muted-foreground text-sm">Connect to server to view information</p>
+          )}
         </CardContent>
       </Card>
     </div>

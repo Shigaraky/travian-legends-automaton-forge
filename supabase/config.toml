@@ -1,1 +1,13 @@
 project_id = "lzmeceqlupndzkejqqnd"
+
+[functions.auth-login]
+verify_jwt = false
+
+[functions.bot-control]
+verify_jwt = false
+
+[functions.village-actions] 
+verify_jwt = false
+
+[functions.strategy-update]
+verify_jwt = false

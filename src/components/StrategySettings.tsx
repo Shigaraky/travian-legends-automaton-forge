@@ -6,7 +6,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Sword, Shield, Users, Target, Clock, Zap } from "lucide-react";
+import { Sword, Shield, Users, Target, Clock, Zap, Loader2 } from "lucide-react";
+import { useBotAPI } from "@/hooks/useBotAPI";
 
 export const StrategySettings = () => {
   const [strategy, setStrategy] = useState({
@@ -19,9 +20,22 @@ export const StrategySettings = () => {
     farmingRadius: [10],
     farmingFrequency: [30] // minutes
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const { updateStrategy } = useBotAPI();
 
-  const handleSave = () => {
-    console.log("Saving strategy:", strategy);
+  const handleSave = async () => {
+    setIsLoading(true);
+    try {
+      await updateStrategy({
+        ...strategy,
+        aggressiveness: strategy.aggressiveness[0],
+        troopRatio: strategy.troopRatio[0],
+        farmingRadius: strategy.farmingRadius[0],
+        farmingFrequency: strategy.farmingFrequency[0]
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const getModeDescription = (mode: string) => {
@@ -176,8 +190,8 @@ export const StrategySettings = () => {
             <Label htmlFor="auto-training">Enable automatic troop training</Label>
           </div>
 
-          <Button onClick={handleSave} className="flex items-center gap-2">
-            <Zap className="w-4 h-4" />
+          <Button onClick={handleSave} className="flex items-center gap-2" disabled={isLoading}>
+            {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4" />}
             Apply Strategy
           </Button>
         </CardContent>
