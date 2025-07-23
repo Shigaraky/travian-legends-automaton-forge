@@ -14,7 +14,195 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      activity_logs: {
+        Row: {
+          action: string
+          category: string | null
+          details: Json | null
+          id: string
+          message: string
+          timestamp: string
+          type: string | null
+          user_id: string
+        }
+        Insert: {
+          action: string
+          category?: string | null
+          details?: Json | null
+          id?: string
+          message: string
+          timestamp?: string
+          type?: string | null
+          user_id: string
+        }
+        Update: {
+          action?: string
+          category?: string | null
+          details?: Json | null
+          id?: string
+          message?: string
+          timestamp?: string
+          type?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      bot_configurations: {
+        Row: {
+          auto_login: boolean | null
+          created_at: string
+          farming_enabled: boolean | null
+          farming_settings: Json | null
+          id: string
+          status: string | null
+          strategy: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          auto_login?: boolean | null
+          created_at?: string
+          farming_enabled?: boolean | null
+          farming_settings?: Json | null
+          id?: string
+          status?: string | null
+          strategy?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          auto_login?: boolean | null
+          created_at?: string
+          farming_enabled?: boolean | null
+          farming_settings?: Json | null
+          id?: string
+          status?: string | null
+          strategy?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      farm_targets: {
+        Row: {
+          coordinates_x: number
+          coordinates_y: number
+          created_at: string
+          danger_level: string | null
+          distance: number | null
+          id: string
+          last_attack: string | null
+          resources: Json | null
+          status: string | null
+          success_rate: number | null
+          user_id: string
+        }
+        Insert: {
+          coordinates_x: number
+          coordinates_y: number
+          created_at?: string
+          danger_level?: string | null
+          distance?: number | null
+          id?: string
+          last_attack?: string | null
+          resources?: Json | null
+          status?: string | null
+          success_rate?: number | null
+          user_id: string
+        }
+        Update: {
+          coordinates_x?: number
+          coordinates_y?: number
+          created_at?: string
+          danger_level?: string | null
+          distance?: number | null
+          id?: string
+          last_attack?: string | null
+          resources?: Json | null
+          status?: string | null
+          success_rate?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          last_login: string | null
+          player_race: string | null
+          server_url: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          last_login?: string | null
+          player_race?: string | null
+          server_url?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          last_login?: string | null
+          player_race?: string | null
+          server_url?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      villages: {
+        Row: {
+          buildings: Json | null
+          coordinates_x: number
+          coordinates_y: number
+          created_at: string
+          id: string
+          is_capital: boolean | null
+          last_update: string | null
+          name: string
+          population: number | null
+          resources: Json | null
+          troops: Json | null
+          user_id: string
+        }
+        Insert: {
+          buildings?: Json | null
+          coordinates_x: number
+          coordinates_y: number
+          created_at?: string
+          id?: string
+          is_capital?: boolean | null
+          last_update?: string | null
+          name: string
+          population?: number | null
+          resources?: Json | null
+          troops?: Json | null
+          user_id: string
+        }
+        Update: {
+          buildings?: Json | null
+          coordinates_x?: number
+          coordinates_y?: number
+          created_at?: string
+          id?: string
+          is_capital?: boolean | null
+          last_update?: string | null
+          name?: string
+          population?: number | null
+          resources?: Json | null
+          troops?: Json | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
