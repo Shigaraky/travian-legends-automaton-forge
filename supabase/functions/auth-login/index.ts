@@ -58,11 +58,13 @@ serve(async (req) => {
       sessionCookies: 'mock_session_12345'
     }
 
-    // Store login data
+    // Store login data and villages
+    const userId = crypto.randomUUID();
+    
     const { data: profile } = await supabase
       .from('profiles')
       .upsert({
-        user_id: crypto.randomUUID(), // In real app, use authenticated user
+        user_id: userId,
         email,
         server_url: serverUrl,
         player_race: playerData.race,
@@ -70,6 +72,35 @@ serve(async (req) => {
       })
       .select()
       .single()
+
+    // Store village data
+    for (const village of playerData.villages) {
+      await supabase
+        .from('villages')
+        .upsert({
+          user_id: userId,
+          name: village.name,
+          coordinates_x: village.coordinates.x,
+          coordinates_y: village.coordinates.y,
+          population: village.population,
+          is_capital: village.name === 'Capital',
+          resources: village.resources,
+          buildings: {},
+          troops: {}
+        })
+    }
+
+    // Log activity
+    await supabase
+      .from('activity_logs')
+      .insert({
+        user_id: userId,
+        action: 'login',
+        type: 'success',
+        category: 'system',
+        message: `Successfully logged in to ${serverUrl}`,
+        details: { race: playerData.race, villages: playerData.villages.length }
+      })
 
     console.log('Login successful:', { race: playerData.race, villages: playerData.villages.length })
 

@@ -8,6 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { Progress } from "@/components/ui/progress";
 import { Target, Users, Clock, MapPin, Zap, AlertTriangle } from "lucide-react";
+import { useBotAPI } from "@/hooks/useBotAPI";
 
 export const FarmingConfig = () => {
   const [farmingSettings, setFarmingSettings] = useState({
@@ -20,6 +21,8 @@ export const FarmingConfig = () => {
     avoidStrongPlayers: true,
     resourceThreshold: [500]
   });
+  
+  const { villageAction, updateStrategy } = useBotAPI();
 
   const [farmTargets] = useState([
     {
@@ -164,7 +167,10 @@ export const FarmingConfig = () => {
             </div>
           </div>
 
-          <Button className="flex items-center gap-2">
+          <Button 
+            className="flex items-center gap-2"
+            onClick={() => updateStrategy({ farmingSettings, farmingEnabled: farmingSettings.enabled })}
+          >
             <Zap className="w-4 h-4" />
             Save Farming Settings
           </Button>
@@ -236,9 +242,13 @@ export const FarmingConfig = () => {
             ))}
           </div>
 
-          <Button variant="outline" className="w-full mt-4 flex items-center gap-2">
+          <Button 
+            variant="outline" 
+            className="w-full mt-4 flex items-center gap-2"
+            onClick={() => villageAction({ action: 'farm' })}
+          >
             <Target className="w-4 h-4" />
-            Scan for New Targets
+            Start Farming Cycle
           </Button>
         </CardContent>
       </Card>

@@ -69,35 +69,16 @@ serve(async (req) => {
         throw new Error('Invalid action')
     }
 
-    // Update village data
-    await supabase
-      .from('villages')
-      .upsert({
-        id: villageId || crypto.randomUUID(),
-        user_id: crypto.randomUUID(),
-        name: `Village ${villageId}`,
-        coordinates_x: Math.floor(Math.random() * 200) - 100,
-        coordinates_y: Math.floor(Math.random() * 200) - 100,
-        population: Math.floor(Math.random() * 500) + 100,
-        resources: {
-          wood: Math.floor(Math.random() * 2000),
-          clay: Math.floor(Math.random() * 2000),
-          iron: Math.floor(Math.random() * 2000),
-          crop: Math.floor(Math.random() * 2000)
-        },
-        buildings: {},
-        troops: {},
-        last_update: new Date().toISOString()
-      })
-
-    // Log activity
+    // Log activity  
     await supabase
       .from('activity_logs')
       .insert({
-        user_id: crypto.randomUUID(),
+        user_id: villageId || crypto.randomUUID(), // In real app, get from auth
         action: `village_${action}`,
-        details: { villageId, result },
-        timestamp: new Date().toISOString()
+        type: 'success',
+        category: action === 'farm' ? 'farming' : action === 'build' ? 'building' : 'troop',
+        message,
+        details: { villageId, result }
       })
 
     console.log('Village action completed:', { action, result })

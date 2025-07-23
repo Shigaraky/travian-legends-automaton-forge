@@ -1,40 +1,58 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Home, Hammer, Users, Wheat, TreePine, Mountain, Factory } from "lucide-react";
+import { useBotAPI } from "@/hooks/useBotAPI";
 
 export const VillageManager = () => {
-  const [villages] = useState([
-    {
-      id: 1,
-      name: "Capital Village",
-      coordinates: "(125|89)",
-      population: 247,
-      isCapital: true,
-      resources: {
-        wood: 1450,
-        clay: 1200,
-        iron: 890,
-        crop: 2100
-      },
-      buildings: [
-        { name: "Main Building", level: 12 },
-        { name: "Granary", level: 8 },
-        { name: "Warehouse", level: 7 },
-        { name: "Marketplace", level: 5 }
-      ],
-      troops: {
-        legionnaire: 25,
-        praetorian: 15,
-        imperian: 8
-      }
-    }
-  ]);
-
+  const [villages, setVillages] = useState([]);
   const [currentVillage, setCurrentVillage] = useState(0);
+  const { villageAction } = useBotAPI();
+
+  // Mock data for demo - in real app, fetch from Supabase
+  useEffect(() => {
+    setVillages([
+      {
+        id: 1,
+        name: "Capital Village",
+        coordinates: "(125|89)",
+        population: 247,
+        isCapital: true,
+        resources: {
+          wood: 1450,
+          clay: 1200,
+          iron: 890,
+          crop: 2100
+        },
+        buildings: [
+          { name: "Main Building", level: 12 },
+          { name: "Granary", level: 8 },
+          { name: "Warehouse", level: 7 },
+          { name: "Marketplace", level: 5 }
+        ],
+        troops: {
+          legionnaire: 25,
+          praetorian: 15,
+          imperian: 8
+        }
+      }
+    ]);
+  }, []);
+
+  const handleVillageAction = async (action: string, params = {}) => {
+    try {
+      await villageAction({
+        action: action as any,
+        villageId: villages[currentVillage]?.id.toString(),
+        ...params
+      });
+    } catch (error) {
+      console.error('Village action failed:', error);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -139,13 +157,21 @@ export const VillageManager = () => {
                   {villages[currentVillage].buildings.map((building, index) => (
                     <Card key={index}>
                       <CardContent className="p-4">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <Hammer className="w-4 h-4" />
-                            <span>{building.name}</span>
-                          </div>
-                          <Badge>Level {building.level}</Badge>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Hammer className="w-4 h-4" />
+                          <span>{building.name}</span>
                         </div>
+                        <div className="flex items-center gap-2">
+                          <Badge>Level {building.level}</Badge>
+                          <Button 
+                            size="sm" 
+                            onClick={() => handleVillageAction('build', { buildingType: building.name })}
+                          >
+                            Upgrade
+                          </Button>
+                        </div>
+                      </div>
                       </CardContent>
                     </Card>
                   ))}
@@ -157,13 +183,21 @@ export const VillageManager = () => {
                   {Object.entries(villages[currentVillage].troops).map(([troopType, count]) => (
                     <Card key={troopType}>
                       <CardContent className="p-4">
+                      <div className="flex items-center justify-between w-full">
                         <div className="flex items-center gap-2">
                           <Users className="w-4 h-4" />
                           <div>
                             <p className="text-sm text-muted-foreground capitalize">{troopType}</p>
-                            <p className="text-lg font-semibold">{count}</p>
+                            <p className="text-lg font-semibold">{count as number}</p>
                           </div>
                         </div>
+                        <Button 
+                          size="sm" 
+                          onClick={() => handleVillageAction('train', { troopType, quantity: 5 })}
+                        >
+                          Train +5
+                        </Button>
+                      </div>
                       </CardContent>
                     </Card>
                   ))}

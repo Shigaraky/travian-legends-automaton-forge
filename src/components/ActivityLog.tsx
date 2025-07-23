@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -6,69 +6,82 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FileText, Filter, Download, Trash2, Clock, CheckCircle, AlertTriangle, XCircle } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 export const ActivityLog = () => {
   const [filter, setFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
+  const [logs, setLogs] = useState([]);
 
-  const [logs] = useState([
-    {
-      id: 1,
-      timestamp: "2024-01-15 14:32:15",
-      type: "success",
-      category: "farming",
-      message: "Successfully raided village (142|88) - Gained 450 wood, 320 clay, 180 iron",
-      details: "Attack completed with 15 Legionnaires, no losses"
-    },
-    {
-      id: 2,
-      timestamp: "2024-01-15 14:28:45",
-      type: "info",
-      category: "building",
-      message: "Started construction: Granary Level 9",
-      details: "Construction time: 42 minutes, Cost: 1200 wood, 800 clay"
-    },
-    {
-      id: 3,
-      timestamp: "2024-01-15 14:25:12",
-      type: "warning",
-      category: "troop",
-      message: "Troop training paused - Insufficient crop",
-      details: "Need 200 more crop to continue Legionnaire training"
-    },
-    {
-      id: 4,
-      timestamp: "2024-01-15 14:20:33",
-      type: "success",
-      category: "farming",
-      message: "New farm target discovered at (135|92)",
-      details: "Distance: 18 squares, Estimated resources: Medium"
-    },
-    {
-      id: 5,
-      timestamp: "2024-01-15 14:15:08",
-      type: "error",
-      category: "system",
-      message: "Connection timeout to server",
-      details: "Automatically reconnected after 15 seconds"
-    },
-    {
-      id: 6,
-      timestamp: "2024-01-15 14:10:22",
-      type: "info",
-      category: "troop",
-      message: "Training completed: 10 Legionnaires",
-      details: "Total training time: 25 minutes"
-    },
-    {
-      id: 7,
-      timestamp: "2024-01-15 14:05:55",
-      type: "success",
-      category: "building",
-      message: "Building completed: Warehouse Level 8",
-      details: "Storage capacity increased to 80,000"
-    }
-  ]);
+  // Fetch logs from database - for demo, using mock data
+  useEffect(() => {
+    // In real app, fetch from Supabase with: 
+    // const fetchLogs = async () => {
+    //   const { data } = await supabase.from('activity_logs').select('*').order('timestamp', { ascending: false });
+    //   setLogs(data || []);
+    // };
+    // fetchLogs();
+    
+    // Mock data for demo
+    setLogs([
+      {
+        id: 1,
+        timestamp: "2024-01-15 14:32:15",
+        type: "success",
+        category: "farming",
+        message: "Successfully raided village (142|88) - Gained 450 wood, 320 clay, 180 iron",
+        details: "Attack completed with 15 Legionnaires, no losses"
+      },
+      {
+        id: 2,
+        timestamp: "2024-01-15 14:28:45",
+        type: "info",
+        category: "building",
+        message: "Started construction: Granary Level 9",
+        details: "Construction time: 42 minutes, Cost: 1200 wood, 800 clay"
+      },
+      {
+        id: 3,
+        timestamp: "2024-01-15 14:25:12",
+        type: "warning",
+        category: "troop",
+        message: "Troop training paused - Insufficient crop",
+        details: "Need 200 more crop to continue Legionnaire training"
+      },
+      {
+        id: 4,
+        timestamp: "2024-01-15 14:20:33",
+        type: "success",
+        category: "farming",
+        message: "New farm target discovered at (135|92)",
+        details: "Distance: 18 squares, Estimated resources: Medium"
+      },
+      {
+        id: 5,
+        timestamp: "2024-01-15 14:15:08",
+        type: "error",
+        category: "system",
+        message: "Connection timeout to server",
+        details: "Automatically reconnected after 15 seconds"
+      },
+      {
+        id: 6,
+        timestamp: "2024-01-15 14:10:22",
+        type: "info",
+        category: "troop",
+        message: "Training completed: 10 Legionnaires",
+        details: "Total training time: 25 minutes"
+      },
+      {
+        id: 7,
+        timestamp: "2024-01-15 14:05:55",
+        type: "success",
+        category: "building",
+        message: "Building completed: Warehouse Level 8",
+        details: "Storage capacity increased to 80,000"
+      }
+    ]);
+  }, []);
 
   const getTypeIcon = (type: string) => {
     switch (type) {
