@@ -68,6 +68,8 @@ export const useBotAPI = () => {
     buildingType?: string;
     troopType?: string;
     quantity?: number;
+    sessionCookies?: string;
+    serverUrl?: string;
   }) => {
     try {
       const { data, error } = await supabase.functions.invoke('village-actions', {
